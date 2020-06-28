@@ -1,0 +1,1108 @@
+{% extends 'templateSG.html' %}
+{% load static %}
+
+{% block main %}
+    <div class="container">
+      <div class="row">
+        <div class="card col-md-8">
+            <div class="card-header card-header-danger">
+                <h4 class="card-title">Number of Tweets by Sentiment</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="Bar" style="display: block; height: 300px; width: 905px;"></canvas>
+            </div>
+        </div>
+        <div class="card col-md-4">
+            <div class="card-header card-header-primary">
+                <h4 class="card-title">Sentiments</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="Pie" style="display: block; height: 300px; width: 905px;"></canvas>
+            </div>
+            <div class="mt-4 text-center medium">
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #6f35c0"></i> Analytical
+              </span>
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #deafff"></i> Tentative
+              </span>
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #f9d94e"></i> Confident
+              </span>
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #1cc88a"></i> Joy
+              </span>
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #4e73df"></i> Sadness
+              </span>
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #FF4800"></i> Anger
+              </span>
+              <span class="mr-2">
+                <i class="fas fa-circle" style="color: #020122"></i> Fear
+              </span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+            <div class="card-header card-header-danger">
+                <h4 class="card-title">Frequency of Tweets with Specific Emotion per 500 tweets Vs Time</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="Anger" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger">
+                <h4 class="card-title">Frequency of 😠 Angry Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="AngerIndi" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #f9d94e, #f9d94e)">
+                <h4 class="card-title">Frequency of 😎 Confident Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="ConfiIndi" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #6f35c0, #6f35c0)">
+                <h4 class="card-title">Frequency of 🧐 Analytical Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="AnalyticalIndi" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #deafff, #deafff)">
+                <h4 class="card-title">Frequency of 🤔 Tentative Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="TentaIndi" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #4e73df, #4e73df)">
+                <h4 class="card-title">Frequency of 😧 Sad Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="SadIndi" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #020122, #020122)">
+                <h4 class="card-title">Frequency of 😨 Fearful Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="FearIndi" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-header card-header-success">
+                <h4 class="card-title">Frequency of 😊 Joyful Tweets</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="JoyIndi" style="display: block; height: 250px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let sgObj = {{ sgObj|safe }};
+        Chart.defaults.global.defaultFontFamily = 'sans-serif', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
+        let ctx = document.getElementById("Anger");
+        let myLineChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: sgObj['date'],
+            datasets: [{
+              label: "Angry",
+              lineTension: 0.3,
+              backgroundColor: "rgba(255, 72, 0, 0.05)",
+              borderColor: "rgba(255, 72, 0, 1)",
+              pointRadius: 0,
+              pointBackgroundColor: "rgba(255, 72, 0, 1)",
+              pointBorderColor: "rgba(255, 72, 0, 1)",
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: "rgba(255, 72, 0, 1)",
+              pointHoverBorderColor: "rgba(255, 72, 0, 1)",
+              pointHitRadius: 10,
+              pointBorderWidth: 2,
+              data: sgObj['anger'],
+            },
+            {
+          label: "Confident",
+          lineTension: 0.3,
+          backgroundColor: "rgba(249, 217, 78, 0.05)",
+          borderColor: "rgba(249, 217, 78, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(249, 217, 78, 1)",
+          pointBorderColor: "rgba(249, 217, 78, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(249, 217, 78, 1)",
+          pointHoverBorderColor: "rgba(249, 217, 78, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['confident'],
+            },
+          {
+          label: "Sad",
+          lineTension: 0.3,
+          backgroundColor: "rgba(78, 115, 223, 0.05)",
+          borderColor: "rgba(78, 115, 223, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointBorderColor: "rgba(78, 115, 223, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['sadness'],
+          },
+          {
+          label: "Joy",
+          lineTension: 0.3,
+          backgroundColor: "rgba(58, 234, 31, 0.05)",
+          borderColor: "rgba(58, 234, 31, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(58, 234, 31, 1)",
+          pointBorderColor: "rgba(58, 234, 31, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(58, 234, 31, 1)",
+          pointHoverBorderColor: "rgba(58, 234, 31, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['joy'],
+          },
+          {
+          label: "Tentative",
+          lineTension: 0.3,
+          backgroundColor: "rgba(226, 175, 255, 0.05)",
+          borderColor: "rgba(226, 175, 255, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(226, 175, 255, 1)",
+          pointBorderColor: "rgba(226, 175, 255, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(226, 175, 255, 1)",
+          pointHoverBorderColor: "rgba(226, 175, 2551, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['tentative'],
+          },
+          {
+          label: "Fear",
+          lineTension: 0.3,
+          backgroundColor: "rgba(2, 1, 34, 0.05)",
+          borderColor: "rgba(2, 1, 34, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(2, 1, 34, 1)",
+          pointBorderColor: "rgba(2, 1, 34, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(2, 1, 34, 1)",
+          pointHoverBorderColor: "rgba(2, 1, 34, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['fear'],
+          },
+          {
+          label: "Analytical",
+          lineTension: 0.3,
+          backgroundColor: "rgba(111, 53, 192, 0.05)",
+          borderColor: "rgba(111, 53, 192, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(111, 53, 192, 1)",
+          pointBorderColor: "rgba(111, 53, 192, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(111, 53, 192, 1)",
+          pointHoverBorderColor: "rgba(111, 53, 192, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['analytical'],
+          }
+            ],
+          },
+          options: {
+            maintainAspectRatio: true,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0
+              }
+            },
+            scales: {
+              xAxes: [{
+                time: {
+                  unit: 'date'
+                },
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                ticks: {
+                  maxTicksLimit: 5
+                },
+              }],
+              yAxes: [{
+                ticks: {
+                  stepSize : 0.05,
+                  maxTicksLimit: 10,
+                  padding: 5,
+                  // Include a dollar sign in the ticks
+                  callback: function(value, index, values) {
+                    return value;
+                  }
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2]
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Frequency',
+                }
+              }],
+            },
+            legend: {
+              display: true
+            },
+            tooltips: {
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              titleMarginBottom: 10,
+              titleFontColor: '#6e707e',
+              titleFontSize: 14,
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              intersect: false,
+              mode: 'index',
+              caretPadding: 10,
+              callbacks: {
+                label: function(tooltipItem, chart) {
+                  var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                  return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+                }
+              }
+            }
+          }
+        });
+                    function number_format(number, decimals, dec_point, thousands_sep) {
+                        // *     example: number_format(1234.56, 2, ',', ' ');
+                        // *     return: '1 234,56'
+                        number = (number + '').replace(',', '').replace(' ', '');
+                        var n = !isFinite(+number) ? 0 : +number,
+                            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+                            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+                            s = '',
+                            toFixedFix = function (n, prec) {
+                                var k = Math.pow(10, prec);
+                                return '' + Math.round(n * k) / k;
+                            };
+                        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+                        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+                        if (s[0].length > 3) {
+                            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+                        }
+                        if ((s[1] || '').length < prec) {
+                            s[1] = s[1] || '';
+                            s[1] += new Array(prec - s[1].length + 1).join('0');
+                        }
+                        return s.join(dec);
+                    }
+    {#-------------------------- BAR GRAPH -----------------------------------#}
+    let bar = {{ bObj|safe }}
+      var ctx2 = document.getElementById("Bar");
+      var myBarChart = new Chart(ctx2, {
+        type: 'horizontalBar',
+        data: {
+            labels: bar['labels'],
+            datasets: [{
+                label: "Frequency",
+                backgroundColor: ['#6f35c0', '#e2afff', '#f9d94e', '#3aea1f','#4e73df', '#ff4800', '#020122'],
+                hoverBackgroundColor: ['#6f35c0', '#e2afff', '#f9d94e', '#3aea1f','#4e73df', '#ff4800', '#020122'],
+                borderColor: "#4e73df",
+                data: bar['values'],
+            }],
+          },
+          options: {
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0
+              }
+            },
+            scales: {
+              yAxes: [{
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                ticks: {
+                  maxTicksLimit: 10
+                },
+                maxBarThickness: 25,
+              }],
+              xAxes: [{
+                ticks: {
+                  maxTicksLimit: 10,
+                  padding: 10,
+                  // Include a dollar sign in the ticks
+                  callback: function(value, index, values) {
+                    return number_format(value);
+                  }
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2]
+                }
+              }],
+            },
+            legend: {
+              display: false
+            },
+            tooltips: {
+              titleMarginBottom: 10,
+              titleFontColor: '#6e707e',
+              titleFontSize: 14,
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              caretPadding: 10,
+              callbacks: {
+                label: function(tooltipItem, chart) {
+                  var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                  return datasetLabel + ': ' + number_format(tooltipItem.xLabel);
+                }
+              }
+            },
+          }
+        });
+    {#  ------------------------------------------------ Pie ---------------------------------------#}
+    var ctx3 = document.getElementById("Pie");
+    var myPieChart = new Chart(ctx3, {
+      type: 'doughnut',
+      data: {
+        labels: bar['labels'],
+        datasets: [{
+          data: bar['values'],
+          backgroundColor: ['#6f35c0', '#e2afff', '#f9d94e', '#3aea1f','#4e73df', '#ff4800', '#020122'],
+          hoverBackgroundColor: ['#6f35c0', '#e2afff', '#f9d94e', '#3aea1f','#4e73df', '#ff4800', '#020122'],
+          hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+        },
+        legend: {
+          display: false
+        },
+        cutoutPercentage: 70,
+      },
+    });
+    {#-------------------------------------------------AngerIndi--------------------------------------------------#}
+    let ctx4 = document.getElementById("AngerIndi");
+    let myLineChart2 = new Chart(ctx4, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Anger",
+          lineTension: 0.3,
+          backgroundColor: "rgba(255, 72, 0, 0.05)",
+          borderColor: "rgba(255, 72, 0, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(255, 72, 0, 1)",
+          pointBorderColor: "rgba(255, 72, 0, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(255, 72, 0, 1)",
+          pointHoverBorderColor: "rgba(255, 72, 0, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['anger'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    {#-----------------------------------------------TentaIndi-----------------------------------------------------#}
+    let ctx5 = document.getElementById("TentaIndi");
+    let myLineChart3 = new Chart(ctx5, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Tentative",
+          lineTension: 0.3,
+          backgroundColor: "rgba(226, 175, 255, 0.05)",
+          borderColor: "rgba(226, 175, 255, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(226, 175, 255, 1)",
+          pointBorderColor: "rgba(226, 175, 255, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(226, 175, 255, 1)",
+          pointHoverBorderColor: "rgba(226, 175, 255, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['tentative'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    {#--------------------------------------------------AnalyticalIndi----------------------------------------#}
+    let ctx6 = document.getElementById("AnalyticalIndi");
+    let myLineChart4 = new Chart(ctx6, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Analytical",
+          lineTension: 0.3,
+          backgroundColor: "rgba(111, 53, 192, 0.05)",
+          borderColor: "rgba(111, 53, 192, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(111, 53, 192, 1)",
+          pointBorderColor: "rgba(111, 53, 192, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(111, 53, 192, 1)",
+          pointHoverBorderColor: "rgba(111, 53, 192, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['analytical'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    {#--------------------------------------------------ConfiIndi--------------------------------------------------#}
+    let ctx7 = document.getElementById("ConfiIndi");
+    let myLineChart5 = new Chart(ctx7, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Confident",
+          lineTension: 0.3,
+          backgroundColor: "rgba(249, 217, 78, 0.05)",
+          borderColor: "rgba(249, 217, 78, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(249, 217, 78, 1)",
+          pointBorderColor: "rgba(249, 217, 78, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(249, 217, 78, 1)",
+          pointHoverBorderColor: "rgba(249, 217, 78, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['confident'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    {#-----------------------------------------------SadIndi------------------------------------------------------#}
+    let ctx8 = document.getElementById("SadIndi");
+    let myLineChart6 = new Chart(ctx8, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Sad",
+          lineTension: 0.3,
+          backgroundColor: "rgba(78, 115, 223, 0.05)",
+          borderColor: "rgba(78, 115, 223, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointBorderColor: "rgba(78, 115, 223, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['sadness'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    {#--------------------------------------------------FearIndi---------------------------------------------------#}
+    let ctx9 = document.getElementById("FearIndi");
+    let myLineChart7 = new Chart(ctx9, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Fear",
+          lineTension: 0.3,
+          backgroundColor: "rgba(2, 1, 34, 0.05)",
+          borderColor: "rgba(2, 1, 34, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(2, 1, 34, 1)",
+          pointBorderColor: "rgba(2, 1, 34, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(2, 1, 34, 1)",
+          pointHoverBorderColor: "rgba(2, 1, 34, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['fear'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    {#--------------------------------------------------JoyIndi-----------------------------------------------------#}
+    let ctx10 = document.getElementById("JoyIndi");
+    let myLineChart8 = new Chart(ctx10, {
+      type: 'line',
+      data: {
+        labels: sgObj['date'],
+        datasets: [{
+          label: "Joy",
+          lineTension: 0.3,
+          backgroundColor: "rgba(58, 234, 31, 0.05)",
+          borderColor: "rgba(58, 234, 31, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(58, 234, 31, 1)",
+          pointBorderColor: "rgba(58, 234, 31, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(58, 234, 31, 1)",
+          pointHoverBorderColor: "rgba(58, 234, 31, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: sgObj['joy'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+    </script>
+{% endblock %}

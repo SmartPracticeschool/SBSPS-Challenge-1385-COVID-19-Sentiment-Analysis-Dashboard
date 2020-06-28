@@ -1,0 +1,625 @@
+{% extends 'template.html' %}
+{% load static %}
+
+{% block main %}
+    <div class="container">
+      <div class="row">
+          <div class="col-md-8 card">
+              <div class="card-header card-header-danger">
+                <h4 class="card-title">Top 10 Hastags</h4>
+{#                <p class="category">Category subtitle</p>#}
+              </div>
+              <div class = "card-body">
+                <canvas id="Hastag" style="display: block; height: 300px; width: 905px;"></canvas>
+              </div>
+          </div>
+          <div class = 'col-md-4 card'>
+              <div class="card-header card-header-primary">
+                <h4 class="card-title">Sentiment</h4>
+{#                <p class="category">Category subtitle</p>#}
+              </div>
+              <div class = "card-body">
+                <canvas id="PieChart" style="display: block; height: 300px; width: 905px;"></canvas>
+              </div>
+              <div class="mt-4 text-center medium">
+                  <span class="mr-2">
+                    <i class="fas fa-circle" style="color: #1cc88a"></i> Positive
+                  </span>
+                  <span class="mr-2">
+                    <i class="fas fa-circle" style="color: #ff0048"></i> Negative
+                  </span>
+                  <span class="mr-2">
+                    <i class="fas fa-circle" style="color: #36b9cc"></i> Neutral
+                  </span>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="card">
+            <div class="card-header card-header-danger">
+              <h4 class="card-title">Sentiment Vs Time : Count of Tweets with Specific Sentiment per 500 Tweets Vs Time</h4>
+                {#<p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="SentVTime" style="display: block; height: 400px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="card">
+              <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #4e73df, #4e73df)">
+                <h4 class="card-title">Mean Sentiment Vs Time : Mean Sentiment Score of 500 Tweets Vs Time</h4>
+                  {#<p class="category">Category subtitle</p>#}
+              </div>
+              <div class="card-body">
+                 <canvas id="CompoundScoreVsTime" style="display: block; height: 400px; width: 905px;"></canvas>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="card col-md-6">
+            <div class="card-header card-header-success">
+                <h4 class="card-title">Positive Sentiment Vs Time : Mean Postive Sentiment Score of 500 Tweets Vs Time</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="PositiveScoreVsTime" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+        <div class="card col-md-6">
+            <div class="card-header card-header-danger">
+                <h4 class="card-title">Negative Sentiment Vs Time : Mean Negative Sentiment Score of 500 Tweets Vs Time</h4>
+{#              <p class="category">Category subtitle</p>#}
+            </div>
+            <div class="card-body">
+               <canvas id="NegativeScoreVsTime" style="display: block; height: 500px; width: 905px;"></canvas>
+            </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let sObj = {{ sObj|safe }};        
+        Chart.defaults.global.defaultFontFamily = 'sans-serif', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
+        let ctx = document.getElementById("SentVTime");
+        let myLineChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: sObj['date'],
+            datasets: [{
+              label: "Negative Tweets",
+              lineTension: 0.3,
+              backgroundColor: "rgba(255, 72, 0, 0.05)",
+              borderColor: "rgba(255, 72, 0, 1)",
+              pointRadius: 3,
+              pointBackgroundColor: "rgba(255, 72, 0, 1)",
+              pointBorderColor: "rgba(255, 72, 0, 1)",
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: "rgba(255, 72, 0, 1)",
+              pointHoverBorderColor: "rgba(255, 72, 0, 1)",
+              pointHitRadius: 10,
+              pointBorderWidth: 2,
+              data: sObj['neg'],
+            },
+            {
+              label: "Positive Tweets",
+              lineTension: 0.3,
+              backgroundColor: "rgba(78, 115, 223, 0.05)",
+              borderColor: "rgba(78, 115, 223, 1)",
+              pointRadius: 3,
+              pointBackgroundColor: "rgba(78, 115, 223, 1)",
+              pointBorderColor: "rgba(78, 115, 223, 1)",
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+              pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+              pointHitRadius: 10,
+              pointBorderWidth: 2,
+              data: sObj['pos'],
+            },
+            {
+              label: "Neutral Tweets",
+              lineTension: 0.3,
+              backgroundColor: "rgba(249, 217, 78, 0.05)",
+              borderColor: "rgba(249, 217, 78, 1)",
+              pointRadius: 3,
+              pointBackgroundColor: "rgba(249, 217, 78, 1)",
+              pointBorderColor: "rgba(249, 217, 78, 1)",
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: "rgba(249, 217, 78, 1)",
+              pointHoverBorderColor: "rgba(249, 217, 78, 1)",
+              pointHitRadius: 10,
+              pointBorderWidth: 2,
+              data: sObj['neu'],
+            }
+            ],
+          },
+          options: {
+            maintainAspectRatio: true,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0
+              }
+            },
+            scales: {
+              xAxes: [{
+                time: {
+                  unit: 'date'
+                },
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                ticks: {
+                  maxTicksLimit: 10
+                },
+              }],
+              yAxes: [{
+                ticks: {
+                  maxTicksLimit: 10,
+                  padding: 5,
+                  // Include a dollar sign in the ticks
+                  callback: function(value, index, values) {
+                    return value;
+                  }
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2]
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Frequency Of Tweets',
+                }
+              }],
+            },
+            legend: {
+              display: true
+            },
+            tooltips: {
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              titleMarginBottom: 10,
+              titleFontColor: '#6e707e',
+              titleFontSize: 14,
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              intersect: false,
+              mode: 'index',
+              caretPadding: 10,
+              callbacks: {
+                label: function(tooltipItem, chart) {
+                  var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || ' ';
+                  return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+                }
+              }
+            }
+          }
+        });        
+                    function number_format(number, decimals, dec_point, thousands_sep) {
+      // *     example: number_format(1234.56, 2, ',', ' ');
+      // *     return: '1 234,56'
+      number = (number + '').replace(',', '').replace(' ', '');
+      var n = !isFinite(+number) ? 0 : +number,
+        prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+        sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+        dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+        s = '',
+        toFixedFix = function(n, prec) {
+          var k = Math.pow(10, prec);
+          return '' + Math.round(n * k) / k;
+        };
+      // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+      s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+      if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+      }
+      if ((s[1] || '').length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1).join('0');
+      }
+      return s.join(dec);
+      }
+      {#----------------------------------------------Hastag----------------------------------------------------------#}
+      let hash = {{ hash|safe }}
+      var ctx2 = document.getElementById("Hastag");
+      var myBarChart = new Chart(ctx2, {
+        type: 'horizontalBar',
+        data: {
+            labels: hash['xaxis'],
+            datasets: [{
+                label: "Frequency",
+                backgroundColor: "#4e73df",
+                hoverBackgroundColor: "#2e59d9",
+                borderColor: "#4e73df",
+                data: hash['yaxis'],
+            }],
+          },
+          options: {
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0
+              }
+            },
+            scales: {
+              yAxes: [{
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                ticks: {
+                  maxTicksLimit: 10
+                },
+                maxBarThickness: 25,
+              }],
+              xAxes: [{
+                ticks: {
+                  maxTicksLimit: 5,
+                  padding: 10,
+                  // Include a dollar sign in the ticks
+                  callback: function(value, index, values) {
+                    return number_format(value);
+                  }
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2]
+                }
+              }],
+            },
+            legend: {
+              display: false
+            },
+            tooltips: {
+              titleMarginBottom: 10,
+              titleFontColor: '#6e707e',
+              titleFontSize: 14,
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              caretPadding: 10,
+              callbacks: {
+                label: function(tooltipItem, chart) {
+                  var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                  return datasetLabel + ': ' + number_format(tooltipItem.xLabel);
+                }
+              }
+            },
+          }
+        });
+    {#-----------------------------------------PieChart---------------------------------------------------#}
+    let pie = {{ pie|safe }}
+    var ctx3 = document.getElementById("PieChart");
+    var myPieChart = new Chart(ctx3, {
+      type: 'doughnut',
+      data: {
+        labels: pie['labels'],
+        datasets: [{
+          data: pie['values'],
+          backgroundColor: ['#1cc88a', '#ff0048', '#36b9cc'],
+          hoverBackgroundColor: ['#1cc88a', '#ff0048', '#36b9cc'],
+          hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+        },
+        legend: {
+          display: false
+        },
+        cutoutPercentage: 70,
+      },
+    });
+    {#----------------------------------------------Compound Score Vs Time------------------------------------------#}
+    let CS = {{ CS|safe }};
+    let ctx4 = document.getElementById("CompoundScoreVsTime");
+    let myLineChart2 = new Chart(ctx4, {
+      type: 'line',
+      data: {
+        labels: CS['dates'],
+        datasets: [{
+          label: "Mean sentiment",
+          lineTension: 0.3,
+          backgroundColor: "rgba(78, 115, 223, 0.05)",
+          borderColor: "rgba(78, 115, 223, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointBorderColor: "rgba(78, 115, 223, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: CS['compound'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel, 3);
+            }
+          }
+        }
+      }
+    });
+    {#----------------------------------------------Positive Sentiment--------------------------------------------#}
+    let ctx5 = document.getElementById("PositiveScoreVsTime");
+    let myLineChart3 = new Chart(ctx5, {
+      type: 'line',
+      data: {
+        labels: CS['dates'],
+        datasets: [{
+          label: "Positive sentiment",
+          lineTension: 0.3,
+          backgroundColor: "rgba(58, 234, 31, 0.05)",
+          borderColor: "rgba(58, 234, 31, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(58, 234, 31, 1)",
+          pointBorderColor: "rgba(58, 234, 31, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(58, 234, 31, 1)",
+          pointHoverBorderColor: "rgba(58, 234, 31, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: CS['pos'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel, 3);
+            }
+          }
+        }
+      }
+    });
+
+    let ctx6 = document.getElementById("NegativeScoreVsTime");
+    let myLineChart4 = new Chart(ctx6, {
+      type: 'line',
+      data: {
+        labels: CS['dates'],
+        datasets: [{
+          label: "Negative sentiment",
+          lineTension: 0.3,
+          backgroundColor: "rgba(255, 72, 0, 0.05)",
+          borderColor: "rgba(255, 72, 0, 1)",
+          pointRadius: 0,
+          pointBackgroundColor: "rgba(255, 72, 0, 1)",
+          pointBorderColor: "rgba(255, 72, 0, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(255, 72, 0, 1)",
+          pointHoverBorderColor: "rgba(255, 72, 0, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: CS['neg'],
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 5
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Frequency',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel, 3);
+            }
+          }
+        }
+      }
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,13 @@
+applications:
+- buildpack: python_buildpack
+  command: gunicorn --env DJANGO_SETTINGS_MODULE=pythondjangoapp.settings.production
+    pythondjangoapp.wsgi -b 0.0.0.0:$PORT
+  disk_quota: 1G
+  domain: null
+  host: null
+  instances: 1
+  memory: 128MB
+  name: c19dashboard
+  routes:
+  - route: c19dashboard.eu-gb.mybluemix.net
+  timeout: 180

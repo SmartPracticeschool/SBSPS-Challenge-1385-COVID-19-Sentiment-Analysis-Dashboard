@@ -1,0 +1,417 @@
+{% extends 'templateC19.html' %}
+{% load static %}
+
+{% block main %}
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-warning" style="text-align: center; font-weight: 500">
+                Total Cases
+            </div>
+            <div class="card-body" id="TotalCases" style="text-align: center; font-size: large; font-weight: 500">
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-danger" style="text-align: center; font-weight: 500">
+                Deaths
+            </div>
+            <div class="card-body" id="Deaths" style="text-align: center; font-size: large; font-weight: 500">
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-success" style="text-align: center; font-weight: 500">
+                Recovered
+            </div>
+            <div class="card-body" id="Recov" style="text-align: center; font-size: large; font-weight: 500">
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-info" style="text-align: center; font-weight: 500">
+                Active
+            </div>
+            <div class="card-body" id="Active" style="text-align: center; font-size: large; font-weight: 500">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-header card-header-danger">
+              <h4 class="card-title">Daily New Cases (India) in last 30 days</h4>
+          </div>
+          <div class="card-body">
+              <canvas id="Cases" style="display: block; height: 300px; width: 905px;"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-header card-header-warning">
+              <h4 class="card-title">Daily Cumulative Cases (India) since 10th March</h4>
+          </div>
+          <div class="card-body">
+              <canvas id="Total-Cases-Cumulative" style="display: block; height: 300px; width: 905px;"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card" style="text-align: center">
+          <div id="india-map" style=" height: 800px; min-width: 800px; max-width: 800px; margin: 0 auto; "></div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  let Ldata;
+  let hdata;
+  let Tcases = document.getElementById('TotalCases');
+  let Deaths = document.getElementById('Deaths');
+  let Recov = document.getElementById('Recov');
+  let Active = document.getElementById('Active');
+  let labels = []
+  let values = []
+  let labels1 = []
+  let values1 = []
+  let stateData1 = [["lakshadweep", 0]];
+  $.ajax({
+      method: "GET",
+      url: 'https://api.rootnet.in/covid19-in/stats/history',
+      success: function(data) {
+        let i;
+        for(i = data.data.length-30; i<data.data.length; i++){
+        labels.push(data.data[i-1].day);
+        values.push(data.data[i].summary.total - data.data[i-1].summary.total);
+        }
+        LineCases(labels, values);
+      },
+      error: function(error_data) {
+        console.log(error_data);
+      }
+    })
+  $.ajax({
+      method: "GET",
+      url: 'https://api.rootnet.in/covid19-in/stats/history',
+      success: function(data) {
+        let i;
+        for(i = 0; i<data.data.length; i++){
+        labels1.push(data.data[i].day);
+        values1.push(data.data[i].summary.total);
+        }
+        LineCases1(labels1, values1);
+      },
+      error: function(error_data) {
+        console.log(error_data);
+      }
+    })
+  $.ajax({
+      method: "GET",
+      url: 'https://api.rootnet.in/covid19-in/stats/latest',
+      success: function(data) {
+        console.log('Data Retrived')
+        Tcases.innerHTML = number_format(data.data['unofficial-summary'][0].total);
+        Deaths.innerText = number_format(data.data['unofficial-summary'][0].deaths);
+        Recov.innerText = number_format(data.data['unofficial-summary'][0].recovered);
+        Active.innerText = number_format(data.data['unofficial-summary'][0].active);
+        let i;
+        for(i = 0; i < data.data['regional'].length; i++) {
+          if (data.data['regional'][i].loc == 'Dadra and Nagar Haveli and Daman and Diu') {
+            stateData1.push(['daman and diu', data.data.regional[i].totalConfirmed]);
+            stateData1.push(['dadara and nagar havelli', data.data.regional[i].totalConfirmed]);
+          } else if (data.data['regional'][i].loc == 'Delhi') {
+            stateData1.push(['nct of delhi', data.data.regional[i].totalConfirmed]);
+          } else if (data.data['regional'][i].loc == 'Ladakh') {
+            continue;
+          } else if (data.data['regional'][i].loc == 'Arunachal Pradesh') {
+            stateData1.push(['arunanchal pradesh', data.data.regional[i].totalConfirmed]);
+          } else if (data.data['regional'][i].loc == 'Andaman and Nicobar Islands') {
+            stateData1.push(['andaman and nicobar', data.data.regional[i].totalConfirmed]);
+          } else {
+            stateData1.push([data.data.regional[i].loc.toLocaleLowerCase(), data.data.regional[i].totalConfirmed]);
+          }
+        }
+        indiaMapFunc(stateData1);
+      },
+      error: function(error_data) {
+        console.log(error_data);
+      }
+    })
+  LineCases = function (labels, values) {
+    Chart.defaults.global.defaultFontFamily = 'sans-serif', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
+    let ctx = document.getElementById("Cases");
+    let myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "New Cases",
+          lineTension: 0.3,
+          backgroundColor: "rgba(255, 72, 0, 0.05)",
+          borderColor: "rgba(255, 72, 0, 1)",
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(255, 72, 0, 1)",
+          pointBorderColor: "rgba(255, 72, 0, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(255, 72, 0, 1)",
+          pointHoverBorderColor: "rgba(255, 72, 0, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: values,
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 15
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'New Cases',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+  }
+  LineCases1 = function (labels, values) {
+    let ctx1 = document.getElementById("Total-Cases-Cumulative");
+    let myLineChart1 = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Total Cases",
+          lineTension: 0.3,
+          backgroundColor: "rgba(249, 217, 78, 0.05)",
+          borderColor: "rgba(249, 217, 78, 1)",
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(249, 217, 78, 1)",
+          pointBorderColor: "rgba(249, 217, 78, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(249, 217, 78, 1)",
+          pointHoverBorderColor: "rgba(249, 217, 78, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: values,
+        }],
+      },
+      options: {
+        maintainAspectRatio: true,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'date'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 15
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 10,
+              padding: 5,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return value;
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Total Cases',
+            }
+          }],
+        },
+        legend: {
+          display: true
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+            }
+          }
+        }
+      }
+    });
+  }
+
+function number_format(number, decimals, dec_point, thousands_sep) {
+  // *     example: number_format(1234.56, 2, ',', ' ');
+  // *     return: '1 234,56'
+  number = (number + '').replace(',', '').replace(' ', '');
+  var n = !isFinite(+number) ? 0 : +number,
+    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+    s = '',
+    toFixedFix = function(n, prec) {
+      var k = Math.pow(10, prec);
+      return '' + Math.round(n * k) / k;
+    };
+  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+  if (s[0].length > 3) {
+    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+  }
+  if ((s[1] || '').length < prec) {
+    s[1] = s[1] || '';
+    s[1] += new Array(prec - s[1].length + 1).join('0');
+  }
+  return s.join(dec);
+  }
+
+// Create the chart
+indiaMapFunc = function(stateData1) {
+  Highcharts.mapChart('india-map', {
+  chart: {
+    map: 'countries/in/custom/in-all-disputed'
+  },
+
+  title: {
+    text: 'State-wise Covid-19 Cases'
+  },
+
+  subtitle: {
+    text: '<p> Hover over states to get total cases.</p>'
+  },
+
+  mapNavigation: {
+    enabled: true,
+    buttonOptions: {
+      verticalAlign: 'bottom'
+    }
+  },
+legend: {
+    layout: 'horizontal',
+    align: 'right',
+    floating: true,
+    backgroundColor: ( // theme
+        Highcharts.defaultOptions &&
+        Highcharts.defaultOptions.legend &&
+        Highcharts.defaultOptions.legend.backgroundColor
+    ) || 'rgba(255, 255, 255, 0.85)'
+},
+  colorAxis: {
+    min: 0
+  },
+
+  series: [{
+    data: stateData1,
+    name: 'Total Cases',
+    states: {
+      hover: {
+        color: '#BADA55'
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      format: '{point.name}'
+    }
+  }]
+});
+}
+
+</script>
+
+
+{% endblock %}
