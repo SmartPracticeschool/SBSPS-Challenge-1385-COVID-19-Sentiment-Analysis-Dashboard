@@ -62,8 +62,13 @@
         </div>
       </div>
       <div class="row">
-        <div class="card" style="text-align: center">
-          <div id="india-map" style=" height: 800px; min-width: 800px; max-width: 800px; margin: 0 auto; "></div>
+        <!-- <div class="card" style="text-align: center"> -->
+        <div class="card">
+          <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #4e73df, #4e73df)">
+            <h4 class="card-title">India Map <i class="far fa-map"></i></h4>
+          </div>
+          <div id="india-map" style="height: 800px;"></div>
+          <!-- <div id="india-map" style=" height: 800px; min-width: 800px; max-width: 800px; margin: 0 auto; "></div> --> 
         </div>
       </div>
     </div>
@@ -81,7 +86,7 @@
   let values = []
   let labels1 = []
   let values1 = []
-  let stateData1 = [["lakshadweep", 0]];
+  let stateData1 = [["lakshadweep", 0]];/*
   $.ajax({
       method: "GET",
       url: 'https://api.rootnet.in/covid19-in/stats/history',
@@ -96,16 +101,21 @@
       error: function(error_data) {
         console.log(error_data);
       }
-    })
+    })*/
   $.ajax({
       method: "GET",
       url: 'https://api.rootnet.in/covid19-in/stats/history',
       success: function(data) {
         let i;
         for(i = 0; i<data.data.length; i++){
-        labels1.push(data.data[i].day);
-        values1.push(data.data[i].summary.total);
+          labels1.push(data.data[i].day);
+          values1.push(data.data[i].summary.total);
+          if (i >= data.data.length -30) {
+            labels.push(data.data[i-1].day);
+            values.push(data.data[i].summary.total - data.data[i-1].summary.total);
+          }
         }
+        LineCases(labels, values);
         LineCases1(labels1, values1);
       },
       error: function(error_data) {
@@ -217,7 +227,7 @@
           display: true
         },
         tooltips: {
-          backgroundColor: "rgb(255,255,255)",
+          backgroundColor: "rgb(255,255,255,0.8)",
           bodyFontColor: "#858796",
           titleMarginBottom: 10,
           titleFontColor: '#6e707e',
@@ -311,7 +321,7 @@
           display: true
         },
         tooltips: {
-          backgroundColor: "rgb(255,255,255)",
+          backgroundColor: "rgb(255,255,255,0.8)",
           bodyFontColor: "#858796",
           titleMarginBottom: 10,
           titleFontColor: '#6e707e',
@@ -368,12 +378,12 @@ indiaMapFunc = function(stateData1) {
   },
 
   title: {
-    text: 'State-wise Covid-19 Cases'
+    text: 'Hover or Tap over States to get total cases'
   },
 
-  subtitle: {
+  /*subtitle: {
     text: '<p> Hover over states to get total cases.</p>'
-  },
+  },*/
 
   mapNavigation: {
     enabled: true,
@@ -400,7 +410,7 @@ legend: {
     name: 'Total Cases',
     states: {
       hover: {
-        color: '#BADA55'
+        color: /*'#BADA55'*/'#ff7e2e'
       }
     },
     dataLabels: {

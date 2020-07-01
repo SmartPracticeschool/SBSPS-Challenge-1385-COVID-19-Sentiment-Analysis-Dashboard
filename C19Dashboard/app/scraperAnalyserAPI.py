@@ -49,7 +49,7 @@ def get_score_df(data_frame_arg):
 
 def scrape():
     """
-    Fetches 500 tweets with predefined search query between between yesterday and today.
+    Fetches 500 tweets with predefined search query between yesterday and today.
     Returns Pandas DataFrame.
     """
     tweetCriteria = got.manager.TweetCriteria().setQuerySearch(
@@ -59,6 +59,7 @@ def scrape():
         .setLang('en') \
         .setEmoji('unicode') \
         .setMaxTweets(500)
+
     tweet = got.manager.TweetManager.getTweets(tweetCriteria)
     text_tweets = [[tw.username,
                     tw.text,
@@ -77,81 +78,84 @@ def update():
     """
     Updates JSON files after scraping, preprocessing, sentiment-analysis
     """
-    print('Update process has started.')
+    with open('app/static/JSONS/ThreeWaySentiment.json') as f:
+        data = json.load(f)
+    if data['date'][-1] == (datetime.datetime.now(tz=ist)-datetime.timedelta(days=1)).strftime("%Y-%m-%d"):
+        return
+
+    print('Update process has started at: {}'.format(str(datetime.datetime.now(tz=ist))))
     tweet_df = scrape()
     if len(tweet_df.index) == 0:
-        print('Scraping Failed.')
+        print('Scraping Failed at: {} '.format(str(datetime.datetime.now(tz=ist))))        
         return
-    else:
-        print('Succesfully scraped {} tweets for {}.'.format(len(tweet_df.index), str(datetime.datetime.now(tz=ist) - datetime.timedelta(days=1))))
-        data_pre_processing(tweet_df)
-        print('Succesfully preprocessed dataset.')
-        get_score_df(tweet_df)
-        print('Succesfully performed sentiment analysis on dataset.')
+    
+    print('Succesfully scraped {} tweets for {} at: {}'.format(len(tweet_df.index), (datetime.datetime.now(tz=ist)-datetime.timedelta(days=1)).strftime("%Y-%m-%d"), str(datetime.datetime.now(tz=ist))))
+    data_pre_processing(tweet_df)
+    print('Succesfully preprocessed dataset at: {}'.format(str(datetime.datetime.now(tz=ist))))
+    get_score_df(tweet_df)
+    print('Succesfully performed sentiment analysis on dataset at: {}'.format(str(datetime.datetime.now(tz=ist))))
+    # ThreeWaySentiment.json update
+    with open('app/static/JSONS/ThreeWaySentiment.json') as f:
+        data = json.load(f)
+    dictResult = dict(tweet_df['result'].value_counts())
+    data['date'].append((datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
+    data['neg'].append(int(dictResult['negative']))
+    data['neu'].append(int(dictResult['neutral']))
+    data['pos'].append(int(dictResult['positive']))
+    with open('app/static/JSONS/ThreeWaySentiment.json', 'w') as json_file:
+        json.dump(data, json_file)
+            
+    print('Succesfully updated ThreeWaysentiment.json at: {}'.format(str(datetime.datetime.now(tz=ist))))
 
-        # ThreeWaySentiment.json update
-        with open('app/static/JSONS/ThreeWaySentiment.json') as f:
-            data = json.load(f)
-        dictResult = dict(tweet_df['result'].value_counts())
-        data['date'].append((datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
-        data['neg'].append(int(dictResult['negative']))
-        data['neu'].append(int(dictResult['neutral']))
-        data['pos'].append(int(dictResult['positive']))
-        with open('app/static/JSONS/ThreeWaySentiment.json', 'w') as json_file:
-            json.dump(data, json_file)
-        
-        print('Succesfully updated ThreeWaysentiment.json')
+    # PieChart.json update
+    with open('app/static/JSONS/PieChart.json') as f:
+        data = json.load(f)
+    dictResult = dict(tweet_df['result'].value_counts())
+    data['values'][0] += int(dictResult['positive'])
+    data['values'][1] += int(dictResult['negative'])
+    data['values'][2] += int(dictResult['neutral'])
+    with open('app/static/JSONS/PieChart.json', 'w') as json_file:
+        json.dump(data, json_file)
+            
+    print('Succesfully updated PieChart.json at: {}'.format(str(datetime.datetime.now(tz=ist))))
 
-        # PieChart.json update
-        with open('app/static/JSONS/PieChart.json') as f:
-            data = json.load(f)
-        dictResult = dict(tweet_df['result'].value_counts())
-        data['values'][0] += int(dictResult['positive'])
-        data['values'][1] += int(dictResult['negative'])
-        data['values'][2] += int(dictResult['neutral'])
-        with open('app/static/JSONS/PieChart.json', 'w') as json_file:
-            json.dump(data, json_file)
-        
-        print('Succesfully updated PieChart.json')
+    # SentimentScores.json update
+    with open('app/static/JSONS/SentimentScores.json') as f:
+        data = json.load(f)
+    data['dates'].append(((datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%B %d")))
+    data['compound'].append(tweet_df['compound'].mean())
+    data['pos'].append(tweet_df['pos'].mean())
+    data['neg'].append(tweet_df['neg'].mean())
+    with open('app/static/JSONS/SentimentScores.json', 'w') as json_file:
+        json.dump(data, json_file)
 
-        # SentimentScores.json update
-        with open('app/static/JSONS/SentimentScores.json') as f:
-            data = json.load(f)
-        data['dates'].append(((datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%B %d")))
-        data['compound'].append(tweet_df['compound'].mean())
-        data['pos'].append(tweet_df['pos'].mean())
-        data['neg'].append(tweet_df['neg'].mean())
-        with open('app/static/JSONS/SentimentScores.json', 'w') as json_file:
-            json.dump(data, json_file)
+    print('Succesfully updated SentimentScores.json at: {}'.format(str(datetime.datetime.now(tz=ist))))
 
-        print('Succesfully updated SentimentScores.json.json')
+    # HastagFrequencyGraph.json and TotalFrequency.json update
+    with open('app/static/JSONS/TotalFrequency.json') as f:
+        data = json.load(f)
+    z = []
+    for x in tweet_df[tweet_df['hashtags'].notna()]['hashtags']:
+        if x == 'NaN':
+            continue
+        for y in x.replace(' ', '').split('#')[1:]:
+            z.append(y)
+    dict2 = dict(pd.Series(z).value_counts())
 
-        # HastagFrequencyGraph.json and TotalFrequency.json update
-        with open('app/static/JSONS/TotalFrequency.json') as f:
-            data = json.load(f)
-        z = []
-        for x in tweet_df[tweet_df['hashtags'].notna()]['hashtags']:
-            if x == 'NaN':
-                continue
-            for y in x.replace(' ', '').split('#')[1:]:
-                z.append(y)
-        dict2 = dict(pd.Series(z).value_counts())
+    for key in dict2:
+        if data.get(key) == None:
+            data.update({key:int(dict2[key])})
+        else :
+            data[key] += int(dict2[key])
+    data = dict(sorted(data.items(), key = lambda x : x[1], reverse=True))
 
-        for key in dict2:
-            if data.get(key) == None:
-                data.update({key:int(dict2[key])})
-            else :
-                data[key] += int(dict2[key])
-        data = dict(sorted(data.items(), key = lambda x : x[1], reverse=True))
+    with open('app/static/JSONS/TotalFrequency.json', 'w') as json_file:
+        json.dump(data, json_file)
 
-        with open('app/static/JSONS/TotalFrequency.json', 'w') as json_file:
-            json.dump(data, json_file)
-
-        with open('app/static/JSONS/HastagFrequencyGraph.json') as f:
-            data2 = json.load(f)
-        data2['xaxis'] = list(data.keys())[:10]
-        data2['yaxis'] = list(data.values())[:10]
-        with open('app/static/JSONS/HastagFrequencyGraph.json', 'w') as json_file:
-            json.dump(data2, json_file)
-
-        print('Succesfully updated TotalFrequency.json and HastagFrequencyGraph.json')
+    with open('app/static/JSONS/HastagFrequencyGraph.json') as f:
+        data2 = json.load(f)
+    data2['xaxis'] = list(data.keys())[:10]
+    data2['yaxis'] = list(data.values())[:10]
+    with open('app/static/JSONS/HastagFrequencyGraph.json', 'w') as json_file:
+        json.dump(data2, json_file)
+    print('Succesfully updated TotalFrequency.json and HastagFrequencyGraph.json at: {}'.format(str(datetime.datetime.now(tz=ist))))

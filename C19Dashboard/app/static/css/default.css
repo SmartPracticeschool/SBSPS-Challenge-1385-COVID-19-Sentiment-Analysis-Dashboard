@@ -73,15 +73,3 @@ body {
     color: #6e98df;
     text-decoration: underline;
 }
-
-#india-map {
-    height: 800px; 
-    min-width: 310px; 
-    max-width: 800px; 
-    margin: 0 auto; 
-}
-.loading {
-    margin-top: 10em;
-    text-align: center;
-    color: gray;
-}

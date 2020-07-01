@@ -6,7 +6,9 @@
       <div class="row">
           <div class="col-md-8 card">
               <div class="card-header card-header-danger">
-                <h4 class="card-title">Top 10 Hastags</h4>
+                <h4 class="card-title"
+                data-toggle="tooltip" title="A Bar graph containing information about Top 10 used #Hashtags related to Covid-19." data-placement="right">
+                Top 10 <i class="fas fa-hashtag"></i>Hashtags</h4>
 {#                <p class="category">Category subtitle</p>#}
               </div>
               <div class = "card-body">
@@ -15,7 +17,9 @@
           </div>
           <div class = 'col-md-4 card'>
               <div class="card-header card-header-primary">
-                <h4 class="card-title">Sentiment</h4>
+                <h4 class="card-title"
+                data-toggle="tooltip" title="Pie chart containing information about positive, negative and neutral sentiments." data-placement="left">
+                Sentiments</h4>
 {#                <p class="category">Category subtitle</p>#}
               </div>
               <div class = "card-body">
@@ -26,10 +30,10 @@
                     <i class="fas fa-circle" style="color: #1cc88a"></i> Positive
                   </span>
                   <span class="mr-2">
-                    <i class="fas fa-circle" style="color: #ff0048"></i> Negative
+                    <i class="fas fa-circle" style="color: #ff1900"></i> Negative
                   </span>
                   <span class="mr-2">
-                    <i class="fas fa-circle" style="color: #36b9cc"></i> Neutral
+                    <i class="fas fa-circle" style="color: #4e73df"></i> Neutral
                   </span>
               </div>
           </div>
@@ -37,7 +41,10 @@
       <div class="row">
         <div class="card">
             <div class="card-header card-header-danger">
-              <h4 class="card-title">Sentiment Vs Time : Count of Tweets with Specific Sentiment per 500 Tweets Vs Time</h4>
+              <h4 class="card-title" 
+              data-toggle="tooltip" title="From a dataset of 500 tweets per day, every tweet is classified into Positive, Negative and Neutral" data-placement="top">
+              Sentiment Vs Time : Count of <i class="fab fa-twitter"></i>
+              Tweets with Specific Sentiment per 500 Tweets Vs Time</h4>
                 {#<p class="category">Category subtitle</p>#}
             </div>
             <div class="card-body">
@@ -48,7 +55,9 @@
       <div class="row">
           <div class="card">
               <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #4e73df, #4e73df)">
-                <h4 class="card-title">Mean Sentiment Vs Time : Mean Sentiment Score of 500 Tweets Vs Time</h4>
+                <h4 class="card-title" 
+                data-toggle="tooltip" title="Sentiment Score of a Tweet ranges between -1 and 1, -1 being extremely Negative and +1 being extremely Positive" data-placement="top">
+                Mean Sentiment Vs Time : Mean Sentiment Score of 500 Tweets Vs Time</h4>
                   {#<p class="category">Category subtitle</p>#}
               </div>
               <div class="card-body">
@@ -59,7 +68,9 @@
       <div class="row">
         <div class="card col-md-6">
             <div class="card-header card-header-success">
-                <h4 class="card-title">Positive Sentiment Vs Time : Mean Postive Sentiment Score of 500 Tweets Vs Time</h4>
+                <h4 class="card-title" 
+                data-toggle="tooltip" title="Positive Sentiment of a Tweet ranges between 0 & 1, increasing with intensity of the Sentiment" data-placement="top">
+                  Positive Sentiment Vs Time : Mean Postive Sentiment Score of 500 Tweets Vs Time</h4>
 {#              <p class="category">Category subtitle</p>#}
             </div>
             <div class="card-body">
@@ -68,7 +79,9 @@
         </div>
         <div class="card col-md-6">
             <div class="card-header card-header-danger">
-                <h4 class="card-title">Negative Sentiment Vs Time : Mean Negative Sentiment Score of 500 Tweets Vs Time</h4>
+                <h4 class="card-title" 
+                data-toggle="tooltip" title="Negative Sentiment of a Tweet ranges between 0 & 1, increasing with intensity of the Sentiment" data-placement="top">
+                  Negative Sentiment Vs Time : Mean Negative Sentiment Score of 500 Tweets Vs Time</h4>
 {#              <p class="category">Category subtitle</p>#}
             </div>
             <div class="card-body">
@@ -81,35 +94,52 @@
 
 {% block script %}
     <script>
-        let sObj = {{ sObj|safe }};        
+        let sObj = {{ sObj|safe }};
+        let CS = {{ CS|safe }};
         Chart.defaults.global.defaultFontFamily = 'sans-serif', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
         Chart.defaults.global.defaultFontColor = '#858796';
         let ctx = document.getElementById("SentVTime");
         let myLineChart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: sObj['date'],
-            datasets: [{
+            labels: CS['dates'],
+            datasets: [
+              {
+              label: "Positive Tweets",
+              lineTension: 0.3,
+              backgroundColor: "rgba(58, 234, 31, 0.05)",
+              borderColor: "rgba(58, 234, 31, 1)",
+              pointRadius: 2,
+              pointBackgroundColor: "rgba(58, 234, 31, 1)",
+              pointBorderColor: "rgba(58, 234, 31, 1)",
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: "rgba(58, 234, 31, 1)",
+              pointHoverBorderColor: "rgba(58, 234, 31, 1)",
+              pointHitRadius: 10,
+              pointBorderWidth: 2,
+              data: sObj['pos'],
+              },
+              {
               label: "Negative Tweets",
               lineTension: 0.3,
-              backgroundColor: "rgba(255, 72, 0, 0.05)",
-              borderColor: "rgba(255, 72, 0, 1)",
-              pointRadius: 3,
-              pointBackgroundColor: "rgba(255, 72, 0, 1)",
-              pointBorderColor: "rgba(255, 72, 0, 1)",
+              backgroundColor: "rgba(255, 25, 0, 0.05)",
+              borderColor: "rgba(255, 25, 0, 1)",
+              pointRadius: 2,
+              pointBackgroundColor: "rgba(255, 25, 0, 1)",
+              pointBorderColor: "rgba(255, 25, 0, 1)",
               pointHoverRadius: 3,
-              pointHoverBackgroundColor: "rgba(255, 72, 0, 1)",
-              pointHoverBorderColor: "rgba(255, 72, 0, 1)",
+              pointHoverBackgroundColor: "rgba(255, 25, 0, 1)",
+              pointHoverBorderColor: "rgba(255, 25, 0, 1)",
               pointHitRadius: 10,
               pointBorderWidth: 2,
               data: sObj['neg'],
-            },
-            {
-              label: "Positive Tweets",
+              },
+              {
+              label: "Neutral Tweets",
               lineTension: 0.3,
               backgroundColor: "rgba(78, 115, 223, 0.05)",
               borderColor: "rgba(78, 115, 223, 1)",
-              pointRadius: 3,
+              pointRadius: 2,
               pointBackgroundColor: "rgba(78, 115, 223, 1)",
               pointBorderColor: "rgba(78, 115, 223, 1)",
               pointHoverRadius: 3,
@@ -117,23 +147,8 @@
               pointHoverBorderColor: "rgba(78, 115, 223, 1)",
               pointHitRadius: 10,
               pointBorderWidth: 2,
-              data: sObj['pos'],
-            },
-            {
-              label: "Neutral Tweets",
-              lineTension: 0.3,
-              backgroundColor: "rgba(249, 217, 78, 0.05)",
-              borderColor: "rgba(249, 217, 78, 1)",
-              pointRadius: 3,
-              pointBackgroundColor: "rgba(249, 217, 78, 1)",
-              pointBorderColor: "rgba(249, 217, 78, 1)",
-              pointHoverRadius: 3,
-              pointHoverBackgroundColor: "rgba(249, 217, 78, 1)",
-              pointHoverBorderColor: "rgba(249, 217, 78, 1)",
-              pointHitRadius: 10,
-              pointBorderWidth: 2,
               data: sObj['neu'],
-            }
+              }
             ],
           },
           options: {
@@ -185,7 +200,7 @@
               display: true
             },
             tooltips: {
-              backgroundColor: "rgb(255,255,255)",
+              backgroundColor: "rgb(255,255,255,0.85)",
               bodyFontColor: "#858796",
               titleMarginBottom: 10,
               titleFontColor: '#6e707e',
@@ -194,7 +209,7 @@
               borderWidth: 1,
               xPadding: 15,
               yPadding: 15,
-              displayColors: false,
+              displayColors: true,
               intersect: false,
               mode: 'index',
               caretPadding: 10,
@@ -231,7 +246,7 @@
       }
       return s.join(dec);
       }
-      {#----------------------------------------------Hastag----------------------------------------------------------#}
+      {#----------------------------------------------Hashtag----------------------------------------------------------#}
       let hash = {{ hash|safe }}
       var ctx2 = document.getElementById("Hastag");
       var myBarChart = new Chart(ctx2, {
@@ -292,7 +307,7 @@
               titleMarginBottom: 10,
               titleFontColor: '#6e707e',
               titleFontSize: 14,
-              backgroundColor: "rgb(255,255,255)",
+              backgroundColor: "rgb(255,255,255,0.85)",
               bodyFontColor: "#858796",
               borderColor: '#dddfeb',
               borderWidth: 1,
@@ -318,15 +333,15 @@
         labels: pie['labels'],
         datasets: [{
           data: pie['values'],
-          backgroundColor: ['#1cc88a', '#ff0048', '#36b9cc'],
-          hoverBackgroundColor: ['#1cc88a', '#ff0048', '#36b9cc'],
+          backgroundColor: ['#1cc88a', '#ff0048', '#4e73df'],
+          hoverBackgroundColor: ['#1cc88a', '#ff0048', '#4e73df'],
           hoverBorderColor: "rgba(234, 236, 244, 1)",
         }],
       },
       options: {
         maintainAspectRatio: false,
         tooltips: {
-          backgroundColor: "rgb(255,255,255)",
+          backgroundColor: "rgb(255,255,255,0.85)",
           bodyFontColor: "#858796",
           borderColor: '#dddfeb',
           borderWidth: 1,
@@ -342,7 +357,7 @@
       },
     });
     {#----------------------------------------------Compound Score Vs Time------------------------------------------#}
-    let CS = {{ CS|safe }};
+    
     let ctx4 = document.getElementById("CompoundScoreVsTime");
     let myLineChart2 = new Chart(ctx4, {
       type: 'line',
@@ -353,7 +368,7 @@
           lineTension: 0.3,
           backgroundColor: "rgba(78, 115, 223, 0.05)",
           borderColor: "rgba(78, 115, 223, 1)",
-          pointRadius: 0,
+          pointRadius: 2,
           pointBackgroundColor: "rgba(78, 115, 223, 1)",
           pointBorderColor: "rgba(78, 115, 223, 1)",
           pointHoverRadius: 3,
@@ -384,7 +399,7 @@
               drawBorder: false
             },
             ticks: {
-              maxTicksLimit: 5
+              maxTicksLimit: 10
             },
           }],
           yAxes: [{
@@ -405,7 +420,7 @@
             },
             scaleLabel: {
                 display: true,
-                labelString: 'Frequency',
+                labelString: 'Sentiment Score',
             }
           }],
         },
@@ -413,7 +428,7 @@
           display: true
         },
         tooltips: {
-          backgroundColor: "rgb(255,255,255)",
+          backgroundColor: "rgb(255,255,255,0.85)",
           bodyFontColor: "#858796",
           titleMarginBottom: 10,
           titleFontColor: '#6e707e',
@@ -482,6 +497,7 @@
           }],
           yAxes: [{
             ticks: {
+              min: 0,
               maxTicksLimit: 10,
               padding: 5,
               // Include a dollar sign in the ticks
@@ -498,7 +514,7 @@
             },
             scaleLabel: {
                 display: true,
-                labelString: 'Frequency',
+                labelString: 'Sentiment Score',
             }
           }],
         },
@@ -506,7 +522,7 @@
           display: true
         },
         tooltips: {
-          backgroundColor: "rgb(255,255,255)",
+          backgroundColor: "rgb(255,255,255,0.85)",
           bodyFontColor: "#858796",
           titleMarginBottom: 10,
           titleFontColor: '#6e707e',
@@ -575,6 +591,7 @@
           }],
           yAxes: [{
             ticks: {
+              min: 0,
               maxTicksLimit: 10,
               padding: 5,
               // Include a dollar sign in the ticks
@@ -591,7 +608,7 @@
             },
             scaleLabel: {
                 display: true,
-                labelString: 'Frequency',
+                labelString: 'Sentiment Score',
             }
           }],
         },
@@ -599,7 +616,7 @@
           display: true
         },
         tooltips: {
-          backgroundColor: "rgb(255,255,255)",
+          backgroundColor: "rgb(255,255,255,0.85)",
           bodyFontColor: "#858796",
           titleMarginBottom: 10,
           titleFontColor: '#6e707e',
