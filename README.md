@@ -12,7 +12,7 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 - [About](#about)
 - [Usage](#usage)
 - [Features](#features)
-- [Setup / Building Locally](#setup-/-building-locally)
+- [Setup and Building Locally](#setup-and-building-locally)
 - [Team Members](#team-members)
 
 ## Important Links For Judges:
@@ -88,7 +88,7 @@ Get the sentiment analysis of the last 100 tweets by any twitter handle instantl
     - [IBM Cloud](https://www.ibm.com/in-en/cloud)
     - [Docker](https://www.docker.com/) integration
 
-## Setup / Building Locally :
+## Setup and Building Locally:
 
 To clone the project: 
 ```bash
