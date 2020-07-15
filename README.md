@@ -73,7 +73,7 @@ Get the sentiment analysis of the last 100 tweets by any twitter handle instantl
 
 - Django-based backend
     - [Django](https://www.djangoproject.com/)
-    - Python 3.6 or later
+    - [Python](https://www.python.org/) 3.6 or later
     
 - Frontend app(webapp) with HTML, JavaScript and CSS
     - Responsive UI with [Bootstrap](https://getbootstrap.com/)
@@ -128,3 +128,7 @@ Your application will be compiled with Docker containers. To compile and run you
 ibmcloud dev build
 ibmcloud dev run
 ```
+## Team Members:
+
+[Atharva Lipare](https://github.com/atharva-lipare)
+[Naad Borole](https://github.com/Naadborole)
