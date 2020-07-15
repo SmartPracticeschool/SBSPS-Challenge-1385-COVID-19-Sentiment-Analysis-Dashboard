@@ -59,6 +59,6 @@ Get state-wise count of Covid-19 cases.
 
 ### Tweet Analysis page
 
-Get the sentiment analysis of any twitter handle instantly.
+Get the sentiment analysis of the last 100 tweets by any twitter handle instantly.
 
 ![tweet-analysis-gif](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/feature.gif)
