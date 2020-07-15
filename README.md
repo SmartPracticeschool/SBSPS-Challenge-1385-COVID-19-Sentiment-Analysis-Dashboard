@@ -68,4 +68,22 @@ Get the sentiment analysis of the last 100 tweets by any twitter handle instantl
 
 ![tweet-analysis-gif](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/feature.gif)
 
-##
+## Features:
+
+- Django-based backend
+    - [Django](https://www.djangoproject.com/)
+    - Python 3.6 or later
+    
+- Frontend app(webapp) with HTML, JavaScript and CSS
+    - Responsive UI with [Bootstrap](https://getbootstrap.com/)
+    - [Chart.js](https://www.chartjs.org/) and [HighCharts](https://www.highcharts.com/) for charts and graphs.
+    
+- Data Analysis Tools used
+  - [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/)
+  - [VADER Sentiment Analysis](https://github.com/cjhutto/vaderSentiment)
+  - [Watson Tone Analyser](https://www.ibm.com/watson/services/tone-analyzer/)
+  
+- Deployment
+    - [IBM Cloud](https://www.ibm.com/in-en/cloud)
+    - [Docker](https://www.docker.com/) integration
+
