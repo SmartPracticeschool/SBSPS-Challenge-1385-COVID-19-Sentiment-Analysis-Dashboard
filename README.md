@@ -3,7 +3,7 @@
 
 ![Mockup](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/mkp-1.png)
 <p align="center">
-    <img src="https://img.shields.io/website-up-down-green-red/http/shields.io.svg?style=flat" alt="platform">
+    <a href="https://c19dashboard.eu-gb.mybluemix.net/"><img src="https://img.shields.io/website-up-down-green-red/http/shields.io.svg?style=flat" alt="platform"></a>    
     <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg?style=flat" alt="platform">
     <a href="https://cloud.ibm.com"><img src="https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg" alt="IBM Cloud"></a>
     <img src="https://img.shields.io/badge/platform-django-lightgrey.svg?style=flat" alt="platform">  
