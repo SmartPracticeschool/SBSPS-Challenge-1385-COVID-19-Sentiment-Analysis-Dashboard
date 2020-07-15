@@ -12,8 +12,8 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 - [About](#about)
 - [Usage](#usage)
 - [Features](#features)
-- [Setup and Building Locally](#setup-and-building-locally)
 - [Team Members](#team-members)
+- [Setup and Building Locally](#setup-and-building-locally)
 
 ## Important Links For Judges:
 - [Website Link](https://c19dashboard.eu-gb.mybluemix.net/)
@@ -87,6 +87,12 @@ Get the sentiment analysis of the last 100 tweets by any twitter handle instantl
 - Deployment
     - [IBM Cloud](https://www.ibm.com/in-en/cloud)
     - [Docker](https://www.docker.com/) integration
+    
+## Team Members:
+
+- [Atharva Lipare](https://github.com/atharva-lipare)
+
+- [Naad Borole](https://github.com/Naadborole)
 
 ## Setup and Building Locally:
 
@@ -128,7 +134,3 @@ Your application will be compiled with Docker containers. To compile and run you
 ibmcloud dev build
 ibmcloud dev run
 ```
-## Team Members:
-
-[Atharva Lipare](https://github.com/atharva-lipare)
-[Naad Borole](https://github.com/Naadborole)
