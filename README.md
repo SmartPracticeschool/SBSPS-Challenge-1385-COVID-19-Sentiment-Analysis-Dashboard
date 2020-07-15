@@ -12,7 +12,7 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 - [About](#about)
 - [Usage](#usage)
 - [Features](#features)
-- [Setup / Building Locally](#setup/buildinglocally)
+- [Setup / Building Locally](#setup-/-building-locally)
 - [Team Members](#team-members)
 
 ## Important Links For Judges:
