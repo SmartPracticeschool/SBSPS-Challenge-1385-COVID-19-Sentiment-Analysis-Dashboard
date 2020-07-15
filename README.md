@@ -12,6 +12,7 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 - [About](#about)
 - [Usage](#usage)
 - [Features](#features)
+- [Setup / Building Locally](#setup/buildinglocally)
 - [Team Members](#team-members)
 
 ## Important Links For Judges:
@@ -87,3 +88,42 @@ Get the sentiment analysis of the last 100 tweets by any twitter handle instantl
     - [IBM Cloud](https://www.ibm.com/in-en/cloud)
     - [Docker](https://www.docker.com/) integration
 
+## Setup / Building Locally :
+
+To clone the project: 
+```bash
+git clone https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard.git
+```
+From your project root, you can download the project dependencies with:
+
+```bash
+pipenv install
+```
+
+To run your application locally:
+
+```bash
+python manage.py start
+```
+
+#### IBM Cloud Developer Tools
+
+Install [IBM Cloud Developer Tools](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started) on your machine by running the following command:
+```
+curl -sL https://ibm.biz/idt-installer | bash
+```
+
+Create an application on IBM Cloud by running:
+
+```bash
+ibmcloud dev create
+```
+
+This will create and download a starter application with the necessary files needed for local development and deployment.
+
+Your application will be compiled with Docker containers. To compile and run your app, run:
+
+```bash
+ibmcloud dev build
+ibmcloud dev run
+```
