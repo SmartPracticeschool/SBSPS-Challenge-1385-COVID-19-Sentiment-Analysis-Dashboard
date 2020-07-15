@@ -56,3 +56,9 @@ Get the latest count of Covid-19 cases, deaths, recovered and active patients.
 Get state-wise count of Covid-19 cases.
 
 ![Cov19-page-2](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/Covid-19-updates-Page-1.png.jpg)
+
+### Tweet Analysis page
+
+Get the sentiment analysis of any twitter handle instantly.
+
+![tweet-analysis-gif](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/feature.gif)
