@@ -46,3 +46,13 @@ Get the distribution of sentiments across states of India.
 Get the trends of distribution of sentiments over time.
 
 ![Sentiment-graph-page](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/Sentiment-Graphs-Page.png)
+
+### Covid 19 Updates Page
+
+Get the latest count of Covid-19 cases, deaths, recovered and active patients.
+
+![Cov19-page-1](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/Covid-19-updates-Page.png)
+
+Get state-wise count of Covid-19 cases.
+
+![Cov19-page-2](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/Covid-19-updates-Page-1.png.jpg)
