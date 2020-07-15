@@ -9,11 +9,27 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 ## Table Of Contents:
 - [Important Links For Judges](#important-links-for-judges)
 - [About](#about)
-- [Dashboard](#dashboard)
+- [Features](#features)
 - [Usage](#getting-started)
 - [Team Members](#team-members)
 ## Important Links For Judges:
 - [Website Link](https://c19dashboard.eu-gb.mybluemix.net/)
 - [YouTube Video Presentation Link](https://www.youtube.com/watch?v=YXsMKCpl7xA)
-- [Project Report Link]()
+- [Project Report Link](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Project-Report-Covid-19-Sentiment-Analysis-Dashboard-Team-Bruteforce.pdf)
 ## About:
+- A dynamic auto-updating dashboard, monitoring tweets made with hashtags such as #indialockdown, #Covid19, #IndiaFightsCOVID19.
+- The web application has the facility to provide Real-time visualizations for sentiments of the general public towards multiple topics such as 'Lockdown', 'Covid-19', 'UnlockIndia' and will not be limited to above topics.
+- Sentiments such as Positive, Neutral and Negative are provided. The tweets are further classified into following categories:
+  - Joy
+  - Fear
+  - Sadness
+  - Analytical
+  - Anger
+  - Confident
+- Real-time Trends of Sentiments over time, Most used Hashtags and distribution of Sentiments across India are displayed using intuitive visualizations.
+- Real-time Covid-19 cases count with line charts and twitter feed by relevant handles are also displayed.
+- On-demand sentiment analysis and twitter timelines of twitter handles are also displayed.
+- The web application is developed using the Django Web Framework.
+## Features:
+### General Page
+![General Page](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/General-Page.png)
