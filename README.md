@@ -32,9 +32,16 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 - The web application is developed using the Django Web Framework.
 ## Features:
 ### General Page
-- Get instant live feed of sentiment across country towards topics related to the Covid-19 Pandemic.
+
+Get instant live feed of sentiment across country towards topics related to the Covid-19 Pandemic.
 
 ![Live Feed and Pie Chart](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/General-Page-crop.png)
-- Get distribution of the Sentiment across states.
+Get distribution of the Sentiment across states.
 
 ![India-Map distribution](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/General-Page-Crop-2.jpg)
+
+### Sentiment Graphs Page
+
+Get trend of distribution of the Sentiment over time.
+
+![Sentiment-graph-page](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Images/Sentiment-Graphs-Page.png)
