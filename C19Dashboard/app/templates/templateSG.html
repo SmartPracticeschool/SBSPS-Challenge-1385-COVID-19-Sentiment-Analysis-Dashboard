@@ -46,6 +46,12 @@
               <p>Covid 19 Updates</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'last'%}">
+              <i class="material-icons">dynamic_form</i>
+              <p>Tweet Analysis</p>
+            </a>
+          </li>
         </ul>
       </div>
         <div class="sidebar-background" style="background-image: url(/static/assets/img/sidebar-1.jpg) "></div>
@@ -66,6 +72,9 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'cu'%}">Covid 19 Updates</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'last'%}">Tweet Analysis</a>
               </li>
             </ul>
           </div>
@@ -100,19 +109,16 @@
                   <h5 class="text-uppercase">Quick Links</h5>          
                   <ul class="list-unstyled">
                     <li>
-                      <a class="nav-link" href="{% url 'home'%}">
-                        <p>General</p>
-                      </a>
+                      <a class="nav-link" href="{% url 'home'%}">General</a>
                     </li>
                     <li>
-                      <a class="nav-link" href="{% url 'sg'%}">
-                        <p>Sentiment Graphs</p>
-                      </a>
+                      <a class="nav-link" href="{% url 'sg'%}">Sentiment Graphs</a>
                     </li>
                     <li>
-                      <a class="nav-link" href="{% url 'cu'%}">
-                        <p>Covid 19 Updates</p>
-                      </a>
+                      <a class="nav-link" href="{% url 'cu'%}">Covid 19 Updates</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'last'%}">Tweet Analysis</a>
                     </li>
                   </ul>
                 </div>

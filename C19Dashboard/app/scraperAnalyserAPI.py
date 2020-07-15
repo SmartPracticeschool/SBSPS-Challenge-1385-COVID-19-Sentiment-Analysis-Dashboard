@@ -8,7 +8,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import re
 import emoji
 import pytz
+
 ist = pytz.timezone('Asia/Kolkata')
+searchQuery = '#lockdownindia OR #indialockdown OR #coronavirusindia OR #coronavirusinindia OR #coronaindia OR #covid19india OR #covid_19india OR #covid2019india OR #covidindia OR #indiafightscorona OR #indiafightscovid19 OR #indiafightscovid2019 OR #indiafightscovid OR #lockdown21 OR #indialockdown2 OR #indialockdown3 OR #indialockdown4 OR #indiaunlock OR #unlockindia OR #lockdownextensionindia OR #lockdowneffect'
 
 def data_pre_processing(data_frame_arg):
     """
@@ -26,8 +28,7 @@ def data_pre_processing(data_frame_arg):
 
     def proc(text):
         text = emoji.demojize(text, use_aliases=True, delimiters=('', '')).replace('_', ' ').replace('&', 'and') \
-            .replace('.', '. ').replace(',', ', ').replace('#', '# ').replace('?', '? ').replace('!', '! ').replace('&',
-                                                                                                                    'and')
+            .replace('.', '. ').replace(',', ', ').replace('#', '# ').replace('?', '? ').replace('!', '! ').replace('&', 'and')
         return re.sub(r'\s+', ' ', text)
 
     data_frame_arg["clean_text"] = data_frame_arg["clean_text"].apply(lambda tweet: proc(tweet))
@@ -46,14 +47,12 @@ def get_score_df(data_frame_arg):
     for col in scores_df_ret:
         data_frame_arg[col] = scores_df_ret[col].to_numpy()
 
-
 def scrape():
     """
     Fetches 500 tweets with predefined search query between yesterday and today.
     Returns Pandas DataFrame.
     """
-    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(
-        '#lockdownindia OR #indialockdown OR #coronavirusindia OR #coronavirusinindia OR #coronaindia OR #covid19india OR #covid_19india OR #covid2019india OR #covidindia OR #indiafightscorona OR #indiafightscovid19 OR #indiafightscovid2019 OR #indiafightscovid OR #lockdown21 OR #indialockdown2 OR #indialockdown3 OR #indialockdown4 OR #indiaunlock OR #unlockindia OR #lockdownextensionindia OR #lockdowneffect') \
+    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(searchQuery) \
         .setSince((datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d")) \
         .setUntil((datetime.datetime.now(tz=ist)).strftime("%Y-%m-%d")) \
         .setLang('en') \
@@ -73,50 +72,60 @@ def scrape():
                            columns=['user', 'text', 'date', 'favorites', 'retweets', 'mentions', 'hashtags'])
     return news_df
 
-
 def update():
     """
     Updates JSON files after scraping, preprocessing, sentiment-analysis
     """
     with open('app/static/JSONS/ThreeWaySentiment.json') as f:
         data = json.load(f)
-    if data['date'][-1] == (datetime.datetime.now(tz=ist)-datetime.timedelta(days=1)).strftime("%Y-%m-%d"):
+    if data['date'][-1] == (datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d"):
         return
 
     print('Update process has started at: {}'.format(str(datetime.datetime.now(tz=ist))))
     tweet_df = scrape()
     if len(tweet_df.index) == 0:
-        print('Scraping Failed at: {} '.format(str(datetime.datetime.now(tz=ist))))        
+        print('Scraping Failed at: {} '.format(str(datetime.datetime.now(tz=ist))))
         return
-    
-    print('Succesfully scraped {} tweets for {} at: {}'.format(len(tweet_df.index), (datetime.datetime.now(tz=ist)-datetime.timedelta(days=1)).strftime("%Y-%m-%d"), str(datetime.datetime.now(tz=ist))))
+
+    print('Succesfully scraped {} tweets for {} at: {}'.format(len(tweet_df.index), (
+                datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d"),
+                                                               str(datetime.datetime.now(tz=ist))))
     data_pre_processing(tweet_df)
     print('Succesfully preprocessed dataset at: {}'.format(str(datetime.datetime.now(tz=ist))))
     get_score_df(tweet_df)
     print('Succesfully performed sentiment analysis on dataset at: {}'.format(str(datetime.datetime.now(tz=ist))))
+
     # ThreeWaySentiment.json update
     with open('app/static/JSONS/ThreeWaySentiment.json') as f:
         data = json.load(f)
     dictResult = dict(tweet_df['result'].value_counts())
     data['date'].append((datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
-    data['neg'].append(int(dictResult['negative']))
-    data['neu'].append(int(dictResult['neutral']))
-    data['pos'].append(int(dictResult['positive']))
+    posGet = dictResult.get('positive')
+    negGet = dictResult.get('negative')
+    neuGet = dictResult.get('neutral')
+    if posGet == None:
+        posGet = 0
+    if negGet == None:
+        negGet = 0
+    if neuGet == None:
+        neuGet = 0        
+    data['neg'].append(int(negGet))
+    data['neu'].append(int(neuGet))
+    data['pos'].append(int(posGet))
     with open('app/static/JSONS/ThreeWaySentiment.json', 'w') as json_file:
         json.dump(data, json_file)
-            
+
     print('Succesfully updated ThreeWaysentiment.json at: {}'.format(str(datetime.datetime.now(tz=ist))))
 
     # PieChart.json update
     with open('app/static/JSONS/PieChart.json') as f:
-        data = json.load(f)
-    dictResult = dict(tweet_df['result'].value_counts())
-    data['values'][0] += int(dictResult['positive'])
-    data['values'][1] += int(dictResult['negative'])
-    data['values'][2] += int(dictResult['neutral'])
+        data = json.load(f)    
+    data['values'][0] += int(posGet)
+    data['values'][1] += int(negGet)
+    data['values'][2] += int(neuGet)
     with open('app/static/JSONS/PieChart.json', 'w') as json_file:
         json.dump(data, json_file)
-            
+
     print('Succesfully updated PieChart.json at: {}'.format(str(datetime.datetime.now(tz=ist))))
 
     # SentimentScores.json update
@@ -144,10 +153,10 @@ def update():
 
     for key in dict2:
         if data.get(key) == None:
-            data.update({key:int(dict2[key])})
-        else :
+            data.update({key: int(dict2[key])})
+        else:
             data[key] += int(dict2[key])
-    data = dict(sorted(data.items(), key = lambda x : x[1], reverse=True))
+    data = dict(sorted(data.items(), key=lambda x: x[1], reverse=True))
 
     with open('app/static/JSONS/TotalFrequency.json', 'w') as json_file:
         json.dump(data, json_file)
@@ -158,4 +167,108 @@ def update():
     data2['yaxis'] = list(data.values())[:10]
     with open('app/static/JSONS/HastagFrequencyGraph.json', 'w') as json_file:
         json.dump(data2, json_file)
-    print('Succesfully updated TotalFrequency.json and HastagFrequencyGraph.json at: {}'.format(str(datetime.datetime.now(tz=ist))))
+    print('Succesfully updated TotalFrequency.json and HastagFrequencyGraph.json at: {}'.format(
+        str(datetime.datetime.now(tz=ist))))
+
+def liveUpdate():
+    with open('app/static/JSONS/update.json') as f:
+        data = json.load(f)
+
+    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(searchQuery) \
+        .setLang('en') \
+        .setEmoji('unicode') \
+        .setMaxTweets(5)
+    tweet = got.manager.TweetManager.getTweets(tweetCriteria)
+    text_tweets = [[tw.username,
+                    tw.text,
+                    tw.date,
+                    tw.retweets,
+                    tw.favorites,
+                    tw.mentions,
+                    tw.hashtags] for tw in tweet]
+    tweet_df = pd.DataFrame(text_tweets,
+                           columns=['user', 'text', 'date', 'favorites', 'retweets', 'mentions', 'hashtags'])
+    if len(tweet_df.index) == 0:
+        print('Scraping tweets for liveUpdate failed at: {} '.format(str(datetime.datetime.now(tz=ist))))
+        return
+    
+    data_pre_processing(tweet_df)
+    get_score_df(tweet_df)
+    data['xaxis'].append(int(datetime.datetime.now(tz=ist).timestamp() * 1000))
+    data['yaxis'].append(tweet_df['compound'].mean())
+    with open('app/static/JSONS/update.json', 'w') as json_file:
+        json.dump(data, json_file)
+    print("Succesfully updated update.json at {}".format(str(datetime.datetime.now(tz=ist))))
+
+def clearUpdatejson():
+    with open('app/static/JSONS/update.json') as f:
+        data = json.load(f)
+    data['xaxis'] = []
+    data['yaxis'] = []
+    with open('app/static/JSONS/update.json', 'w') as json_file:
+        json.dump(data, json_file)
+    print("Succesfully cleared update.json at {}".format(str(datetime.datetime.now(tz=ist))))
+
+def updateStatesData():
+    with open('app/static/JSONS/states_data.json') as f:
+        data = json.load(f)
+    if data['date'] == (datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d"):
+        return
+    for i in range(36):
+        if data['data'][0][i][0] == 'dadara and nagar havelli':
+            continue
+        elif data['data'][0][i][0] == "nct of delhi":
+            state = 'delhi'
+        else :
+            state = data['data'][0][i][0]
+        print('scraping tweets for {}'.format(state))
+        newSrchQry = searchQuery + ' AND ' + state
+        tweetCriteria = got.manager.TweetCriteria().setQuerySearch(newSrchQry) \
+            .setLang('en') \
+            .setEmoji('unicode') \
+            .setMaxTweets(100)
+
+        tweet = got.manager.TweetManager.getTweets(tweetCriteria)
+        text_tweets = [[tw.username,
+                        tw.text,
+                        tw.date,
+                        tw.retweets,
+                        tw.favorites,
+                        tw.mentions,
+                        tw.hashtags] for tw in tweet]
+
+        tweet_df = pd.DataFrame(text_tweets,
+                            columns=['user', 'text', 'date', 'favorites', 'retweets', 'mentions', 'hashtags'])
+        if len(tweet_df.index) == 0:
+            print('Scraping tweets for {} failed at: {} '.format(state, str(datetime.datetime.now(tz=ist))))
+            continue
+        data_pre_processing(tweet_df)
+        get_score_df(tweet_df)
+        dictResult = dict(tweet_df['result'].value_counts())
+        pos = dictResult.get('positive')
+        neg = dictResult.get('negative')
+        neu = dictResult.get('neutral')
+        total = 0
+        if pos:
+            total += pos
+        if neg:
+            total += neg
+        if neu:
+            total += neu
+        if pos:
+            data['data'][0][i][1] = int(pos / total * 100)
+        else :
+            data['data'][0][i][1] = 0
+        if neg:
+            data['data'][1][i][1] = int(neg / total * 100)
+        else :
+            data['data'][1][i][1] = 0
+        if neu:
+            data['data'][2][i][1] = int(neu / total * 100)
+        else :
+            data['data'][2][i][1] = 0
+
+    data['date'] = (datetime.datetime.now(tz=ist) - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    with open('app/static/JSONS/states_data.json', 'w') as json_file:
+        json.dump(data, json_file)
+    print("Succesfully updated states_data.json at {}".format(str(datetime.datetime.now(tz=ist))))

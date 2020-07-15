@@ -9,7 +9,9 @@
             <div class="card-header card-header-warning" style="text-align: center; font-weight: 500">
                 Total Cases
             </div>
-            <div class="card-body" id="TotalCases" style="text-align: center; font-size: large; font-weight: 500">
+            <!-- <div class="card-body" id="TotalCases" style="text-align: center; font-size: large; font-weight: 500"> -->
+            <div class="card-body" style="text-align: center; font-size: large; font-weight: 500">
+              <div class="text-centre" id="TotalCases"></div>
             </div>
           </div>
         </div>
@@ -40,7 +42,8 @@
             </div>
           </div>
         </div>
-      </div>
+      </div>      
+      <div class="text-centre" id="LastUpdate"></div>
       <div class="row">
         <div class="card">
           <div class="card-header card-header-danger">
@@ -62,13 +65,22 @@
         </div>
       </div>
       <div class="row">
-        <!-- <div class="card" style="text-align: center"> -->
         <div class="card">
           <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #4e73df, #4e73df)">
             <h4 class="card-title">India Map <i class="far fa-map"></i></h4>
           </div>
           <div id="india-map" style="height: 800px;"></div>
-          <!-- <div id="india-map" style=" height: 800px; min-width: 800px; max-width: 800px; margin: 0 auto; "></div> --> 
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <a class="twitter-timeline" data-width="450" data-height="700" data-theme="light" href="https://twitter.com/WHO?ref_src=twsrc%5Etfw">Tweets by WHO</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+        </div>
+        <div class="col-sm-4">
+          <a class="twitter-timeline" data-width="450" data-height="700" data-theme="light" href="https://twitter.com/MoHFW_INDIA?ref_src=twsrc%5Etfw">Tweets by MoHFW_INDIA</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+        </div>
+        <div class="col-sm-4">
+            <a class="twitter-timeline" data-width="450" data-height="700" data-theme="light" href="https://twitter.com/mygovindia?ref_src=twsrc%5Etfw">Tweets by mygovindia</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
         </div>
       </div>
     </div>
@@ -82,26 +94,12 @@
   let Deaths = document.getElementById('Deaths');
   let Recov = document.getElementById('Recov');
   let Active = document.getElementById('Active');
+  let LastUpdate = document.getElementById('LastUpdate');
   let labels = []
   let values = []
   let labels1 = []
   let values1 = []
-  let stateData1 = [["lakshadweep", 0]];/*
-  $.ajax({
-      method: "GET",
-      url: 'https://api.rootnet.in/covid19-in/stats/history',
-      success: function(data) {
-        let i;
-        for(i = data.data.length-30; i<data.data.length; i++){
-        labels.push(data.data[i-1].day);
-        values.push(data.data[i].summary.total - data.data[i-1].summary.total);
-        }
-        LineCases(labels, values);
-      },
-      error: function(error_data) {
-        console.log(error_data);
-      }
-    })*/
+  let stateData1 = [["lakshadweep", 0]];
   $.ajax({
       method: "GET",
       url: 'https://api.rootnet.in/covid19-in/stats/history',
@@ -130,7 +128,11 @@
         Tcases.innerHTML = number_format(data.data['unofficial-summary'][0].total);
         Deaths.innerText = number_format(data.data['unofficial-summary'][0].deaths);
         Recov.innerText = number_format(data.data['unofficial-summary'][0].recovered);
-        Active.innerText = number_format(data.data['unofficial-summary'][0].active);
+        Active.innerText = number_format(data.data['unofficial-summary'][0].active);        
+        var n = data.lastRefreshed.replace("T", " ");
+        n = n.replace("Z", "");
+        n = "Last Updated at " + n;
+        LastUpdate.innerText = n
         let i;
         for(i = 0; i < data.data['regional'].length; i++) {
           if (data.data['regional'][i].loc == 'Dadra and Nagar Haveli and Daman and Diu') {
@@ -422,6 +424,4 @@ legend: {
 }
 
 </script>
-
-
 {% endblock %}

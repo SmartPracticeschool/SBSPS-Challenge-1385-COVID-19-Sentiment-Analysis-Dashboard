@@ -39,6 +39,19 @@
           </div>
       </div>
       <div class="row">
+        <div class = 'card'>
+          <div class="card-header card-header-warning">
+            <h4 class="card-title"
+              data-toggle="tooltip" title="Sentiment Score of a Tweet ranges between -1 and 1, -1 being extremely Negative and +1 being extremely Positive" data-placement="top">
+              Sentiment Vs Time : Live Feed <i class="fas fa-sync fa-spin"></i></h4>
+{#              <p class="category">Category subtitle</p>#}
+          </div>
+          <div class="card-body">
+            <div id="container" style="display: block; height: 350px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
         <div class="card">
             <div class="card-header card-header-danger">
               <h4 class="card-title" 
@@ -88,6 +101,26 @@
                <canvas id="NegativeScoreVsTime" style="display: block; height: 500px; width: 905px;"></canvas>
             </div>
         </div>
+      </div>
+      <div class="row">
+        <div class="card">            
+          <div class="card-header card-header-danger" style="background: linear-gradient(60deg, #4e73df, #4e73df)">
+            <h4 class="card-title" 
+              data-toggle="tooltip" title="National distribution of Sentiment of a Tweet" data-placement="top">
+              Sentiments across India</h4>                  
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="sel1">Sentiment Distribution (select one):</label>
+                <select class="custom-select" id="sel1" onchange="getSelectId()">
+                <option>Positive Tweets</option>
+                <option>Negative Tweets</option>
+                <option>Neutral Tweets</option>
+              </select>
+            </div>
+            <div id="india-map" style="height: 800px;"></div>
+          </div>          
+        </div>        
       </div>
     </div>
 {% endblock %}
@@ -222,7 +255,7 @@
             }
           }
         });        
-                    function number_format(number, decimals, dec_point, thousands_sep) {
+      function number_format(number, decimals, dec_point, thousands_sep) {
       // *     example: number_format(1234.56, 2, ',', ' ');
       // *     return: '1 234,56'
       number = (number + '').replace(',', '').replace(' ', '');
@@ -638,5 +671,171 @@
         }
       }
     });
-    </script>
+    {#-----------------------------------------------------------------------------------------------------------------#}
+    let prevX;
+    Highcharts.stockChart('container', {
+        chart: {
+            events: {
+                load: function () {
+                    var series = this.series[0];
+                    console.log(series);
+                    // set up the updating of the chart each second
+                    setInterval(function(){
+                      $.ajax({
+                      method: "GET",
+                      url: '/data',
+                      success: function(data) {
+                        upX = data.xaxis;
+                        upY = data.yaxis;
+                        if(prevX != upX[upX.length-1]){
+                            series.addPoint([upX[upX.length-1], upY[upY.length-1]], true, true)
+                            prevX = upX[upX.length-1];
+                         }
+                      },
+                      error: function(error_data) {
+                        console.log(error_data);
+                      }
+                    })
+                     }, 1000);
+                }
+            }
+        },
+
+        time: {
+            useUTC: false
+        },
+
+        rangeSelector: {
+            buttons: [{
+                count: 5,
+                type: 'minute',
+                text: '5M'
+            }, {
+                count: 10,
+                type: 'minute',
+                text: '10M'
+            }, {
+                count: 30,
+                type: 'minute',
+                text: '30M'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+            inputEnabled: false,
+            selected: 1
+        },
+        exporting: {
+            enabled: true
+        },
+        colors : ['#f9d94e'],
+        navigator: {
+          maskFill : 'rgba(249, 217, 78,0.3)',
+        },
+        plotOptions :{
+          line :{
+            lineWidth : 3
+          }
+        },
+        series: [{
+            name: 'Sentiment',
+            data: (function () {
+            let dataF = []
+            $.ajax({
+                  method: "GET",
+                  url: '/data',
+                  async: false,
+                  success: function(data) {
+                    upX = data.xaxis;
+                    upY = data.yaxis;
+                    for(let i=0; i<upX.length; i++){
+                        dataF.push([upX[i], upY[i]]);
+                        prevX = upX[i];
+                    }
+                  },
+                  error: function(error_data) {
+                    console.log(error_data);
+                  }
+            })
+            return dataF;
+        }())
+        }]
+    });
+
+  let state_data = {{ state_data|safe }};
+  data = state_data['data']
+  selectedId = 0;
+  function getSelectId() {
+    selectedId = document.getElementById("sel1").selectedIndex;
+    indiaMapFunc(selectedId);
+  }
+  
+  Highcharts.datasets = [data[0], data[1], data[2]];
+  colorId = [
+      {
+        min: 0,
+        minColor: '#E6E7E8',
+        maxColor: '#005645',
+      },
+      {
+        min: 0,
+        max: 50,
+        minColor: '#F1EEF6',
+        maxColor: '#500007',
+      },
+      {
+        min: 0
+      },
+  ]
+
+  indiaMapFunc = function(selectedId) {
+  Highcharts.mapChart('india-map', {
+  chart: {
+    map: 'countries/in/custom/in-all-disputed'
+  },
+
+  title: {
+    text: 'Hover or Tap over States to get Sentiment Distribution'
+  },
+
+  mapNavigation: {
+    enabled: true,
+    buttonOptions: {
+      verticalAlign: 'bottom'
+    }
+  },
+legend: {
+    layout: 'horizontal',
+    align: 'right',
+    floating: true,
+    backgroundColor: ( // theme
+        Highcharts.defaultOptions &&
+        Highcharts.defaultOptions.legend &&
+        Highcharts.defaultOptions.legend.backgroundColor
+    ) || 'rgba(255, 255, 255, 0.85)'
+},
+  colorAxis: colorId[selectedId],
+  
+  series: [{
+    data: Highcharts.datasets[selectedId],
+    selectedDataset: selectedId,
+    name: 'Tweet Percentage',
+    states: {
+      hover: {
+        color: '#ff7e2e'
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      format: '{point.name}'
+    },
+    tooltip: {
+	    valueSuffix: ' %',
+	    valueDecimals: 0
+	  }
+  }]
+});
+}
+indiaMapFunc(0);
+</script>
 {% endblock %}

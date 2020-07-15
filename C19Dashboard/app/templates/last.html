@@ -1,0 +1,144 @@
+{% extends 'templateLast.html' %}
+
+{% block main %}
+    <form>
+    <div class="row">
+        <div class="col-md-6 card" style="height: 300px">
+          <div class="card-body">
+          <form class="form-group" onsubmit="return false">
+            <div class="form-row">
+            <label for="exampleInputEmail1" style="color: black; font-size: medium; margin-left: 150px">Enter Username</label><br>
+            <input type="text" class="form-control" value="WHO" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <br><br>
+            <button type = "button" onclick="buttonFunc()" class="btn btn-primary" style="margin-left: 150px">Submit</button>
+            </div>
+          </form>
+           <br>
+           <p class="form-text text-muted" style="font-size: medium">Please enter valid twitter username. eg. WHO, mygovindia etc.</p>
+          </div>
+        </div>
+        <div class="col-md-6 card">
+          <div class="card-body">
+              <div class="spinner-border2" style="width: 60px; height: 60px; margin-left: 170px; margin-top: 100px" role="status" id="loader">
+                <span class="sr-only">Loading...</span>
+              </div>
+              <canvas id="Cases"></canvas>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-md-11 card" style="margin-left: 45px">
+            <div class="card-body" id = "twit">
+            <a class="twitter-timeline" data-width="940" data-height="900" href="https://twitter.com/WHO?ref_src=twsrc%5Etfw">Tweets by WHO</a>
+            </div>
+            </div>
+        </div>
+        </div>
+    </form>
+    {% endblock %}
+{% block script %}
+    <script>
+        let ctx3 = document.getElementById("Cases");
+        $("#loader").hide();
+        let labels = ["positive", "negative", "neutral"];
+        let datain = [59, 28, 13];
+        let myPieChart = new Chart(ctx3, {
+      type: 'horizontalBar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: datain,
+          backgroundColor: ['#1cc88a', '#ff0048', '#4e73df'],
+          hoverBackgroundColor: ['#1cc88a', '#ff0048', '#4e73df'],
+          hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        tooltips: {
+          backgroundColor: "rgb(255,255,255,0.85)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+        },
+        legend: {
+          display: false
+        },
+      },
+     });
+        buttonFunc = function () {
+            console.log("Func called")
+            let username = document.getElementById("exampleInputEmail1").value
+            let endpoint = "get/" + username + "/";
+            document.getElementById("twit").innerHTML = "";
+            twttr.widgets.createTimeline(
+                  {
+                    sourceType: 'profile',
+                    screenName: username,
+                  },
+                  document.getElementById('twit'),
+                  {
+                    width: '940',
+                    height: '900',
+                    related: 'twitterdev,twitterapi'
+                  }).then(function (el) {
+                    console.log('Embedded a timeline.')
+                  });
+              twttr.widgets.load();
+            $.ajax({
+                  method: "GET",
+                  url: endpoint,
+                  beforeSend: function(){
+                    $("#Cases").hide();
+                    $("#loader").show();
+                  },
+                  complete: function(){
+                    $('#loader').hide();
+                    $('#Cases').show();
+                  },
+                  success: function(data) {
+                    console.log(data);
+                    myPieChart.data.datasets[0].data = [data['positive'], data['negative'], data['neutral']];
+                    myPieChart.update();
+                  },
+                  error: function(error_data) {
+                    console.log(error_data);
+                  }
+            })
+        }
+ChartFunc  = function(lab, val){
+      myPieChart = new Chart(ctx3, {
+      type: 'horizontalBar',
+      data: {
+        labels: lab,
+        datasets: [{
+          data: val,
+          backgroundColor: ['#1cc88a', '#ff0048', '#4e73df'],
+          hoverBackgroundColor: ['#1cc88a', '#ff0048', '#4e73df'],
+          hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        tooltips: {
+          backgroundColor: "rgb(255,255,255,0.85)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+        },
+        legend: {
+          display: false
+        },
+      },
+     });
+    }
+
+    </script>
+{% endblock %}
