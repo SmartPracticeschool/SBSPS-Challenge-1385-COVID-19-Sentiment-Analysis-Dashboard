@@ -94,9 +94,10 @@ To clone the project:
 ```bash
 git clone https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard.git
 ```
-From your project root, you can download the project dependencies with:
+From project root, you can download the project dependencies with:
 
 ```bash
+cd c19Dashboard
 pipenv install
 ```
 
