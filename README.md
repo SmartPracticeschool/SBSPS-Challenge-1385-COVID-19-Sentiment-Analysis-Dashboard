@@ -23,6 +23,7 @@ An Auto-Updating Dynamic Covid-19 Sentiment Analysis Dashboard made using Django
 ## Important Links For Judges:
 - [Website Link](https://c19dashboard.eu-gb.mybluemix.net/)
 - [YouTube Video Presentation Link](https://www.youtube.com/watch?v=YXsMKCpl7xA)
+- [Google Slides Presentation Link](https://docs.google.com/presentation/d/1nWql3NLyXgAUJtA_IXT_1eQp9f0ehd38nc8XdfT32yQ/edit?usp=sharing)
 - [Project Report Link](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/blob/master/Project-Report-Covid-19-Sentiment-Analysis-Dashboard-Team-Bruteforce.pdf)
 - [Source Code](https://github.com/SmartPracticeschool/SBSPS-Challenge-1385-COVID-19-Sentiment-Analysis-Dashboard/tree/master/C19Dashboard)
 
